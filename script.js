@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const celebrationText2 = document.getElementById("celebrationText2");
   const celebrationText3 = document.getElementById("celebrationText3");
   const returnButton = document.getElementById("returnButton");
+  const ageInput = document.getElementById("ageInput");
+  const submitAgeButton = document.getElementById("submitAge");
   let candles = [];
   let audioContext;
   let analyser;
@@ -78,11 +80,80 @@ document.addEventListener("DOMContentLoaded", function () {
     hideCelebration();
   });
 
+  // Age input submission functionality
+  submitAgeButton.addEventListener("click", function() {
+    const age = parseInt(ageInput.value);
+    if (age && age > 0 && age <= 30) {
+      console.log("🕯️ Auto-placing", age, "candles");
+      clearAllCandles();
+      autoPlaceCandles(age);
+      ageInput.value = ""; // Clear input after submission
+    } else {
+      alert("Vui lòng nhập số tuổi từ 1 đến 30!");
+    }
+  });
+
+  // Allow Enter key to submit
+  ageInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      submitAgeButton.click();
+    }
+  });
+
+  function clearAllCandles() {
+    // Remove all existing candles
+    candles.forEach(candle => {
+      if (candle.parentNode) {
+        candle.parentNode.removeChild(candle);
+      }
+    });
+    candles = [];
+    updateCandleCount();
+    console.log("🧹 All candles cleared");
+  }
+
+  function autoPlaceCandles(count) {
+    // Get cake dimensions and position
+    const cakeRect = cake.getBoundingClientRect();
+    const cakeWidth = 375; // CSS width
+    const cakeHeight = 300; // CSS height
+    
+    // Top layer boundaries (relative to cake container)
+    const topLayerTop = 0; // Top layer starts at top of cake
+    const topLayerHeight = 150; // Top layer is 150px high
+    const topLayerLeft = 0;
+    const topLayerRight = cakeWidth;
+    
+    // Calculate safe zone for candles (avoid edges)
+    const safeMargin = 30;
+    const safeLeft = safeMargin;
+    const safeRight = cakeWidth - safeMargin;
+    const safeTop = topLayerTop + safeMargin;
+    const safeBottom = topLayerTop + topLayerHeight - safeMargin;
+    
+    // Place candles randomly in the safe zone
+    for (let i = 0; i < count; i++) {
+      const randomLeft = safeLeft + Math.random() * (safeRight - safeLeft);
+      const randomTop = safeTop + Math.random() * (safeBottom - safeTop);
+      
+      // Add small delay to make placement look more natural
+      setTimeout(() => {
+        addCandle(randomLeft, randomTop);
+      }, i * 100); // 100ms delay between each candle
+    }
+    
+    console.log("🕯️ Auto-placed", count, "candles on top layer");
+  }
+
   function updateCandleCount() {
     const activeCandles = candles.filter(
       (candle) => !candle.classList.contains("out")
     ).length;
-    candleCountDisplay.textContent = activeCandles;
+    
+    // Only update display if element exists (it might be commented out)
+    if (candleCountDisplay) {
+      candleCountDisplay.textContent = activeCandles;
+    }
     
     // Check if all candles are blown out and we have candles
     if (activeCandles === 0 && candles.length > 0 && !celebrationActive) {
@@ -356,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       returnButton.classList.add("show");
       console.log("🔄 Return button shown");
-    }, 7000); // Show return button after 7 seconds (after all messages)
+    }, 2000); // Show return button after 2 seconds (quick access)
   }
 
   function triggerCelebration() {

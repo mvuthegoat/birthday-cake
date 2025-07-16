@@ -2,6 +2,24 @@ body {
   background-color: #333;
 }
 
+.credit {
+  position: fixed;
+  top: 20px;
+  left: 60px;
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  color: #999;
+  z-index: 100;
+  font-style: italic;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.credit:hover {
+  opacity: 1;
+  color: #BBB;
+}
+
 .candle-count-display {
   text-align: center;
   margin-top: 150px;
@@ -22,6 +40,85 @@ body {
 .candle-count-display span {
   font-weight: bold;
   color: #AD030F;
+}
+
+.age-input-container {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  color: #6A4B18;
+  background-color: #F0E4D0;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid #553C13;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.age-input-container label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.age-input-container input {
+  padding: 8px 12px;
+  border: 2px solid #553C13;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  color: #6A4B18;
+  background-color: #FFF;
+  width: 60px;
+  text-align: center;
+}
+
+/* Hide number input arrows/spinners */
+.age-input-container input::-webkit-outer-spin-button,
+.age-input-container input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.age-input-container input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.age-input-container input:focus {
+  outline: none;
+  border-color: #AD030F;
+  box-shadow: 0 0 5px rgba(173, 3, 15, 0.3);
+}
+
+.age-input-container button {
+  padding: 8px 16px;
+  background-color: #AD030F;
+  color: #FFF;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.age-input-container button:hover {
+  background-color: #8B0209;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.age-input-container button:active {
+  transform: translateY(0);
 }
 
 .cake {
