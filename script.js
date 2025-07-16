@@ -3,11 +3,37 @@ document.addEventListener("DOMContentLoaded", function () {
   const candleCountDisplay = document.getElementById("candleCount");
   const blackScreen = document.getElementById("blackScreen");
   const celebrationText = document.getElementById("celebrationText");
+  const returnButton = document.getElementById("returnButton");
   let candles = [];
   let audioContext;
   let analyser;
   let microphone;
   let celebrationActive = false;
+  
+  // Birthday music - put your music file in the same directory
+  const birthdayMusic = new Audio("birthday-song.mp3");
+  birthdayMusic.loop = false;
+  birthdayMusic.volume = 0.7;
+  
+  // Photo filenames - add your photos to the same directory
+  const photoFiles = [
+    "photo1.jpg",
+    "photo2.jpg", 
+    "photo3.jpg",
+    "photo4.jpg",
+    "photo5.jpg",
+    "photo6.jpg",
+    "photo7.jpg",
+    "photo8.jpg",
+    "photo9.jpg",
+    "photo10.jpg"
+  ];
+
+  // Return button functionality
+  returnButton.addEventListener("click", function() {
+    console.log("🔄 Return button clicked");
+    hideCelebration();
+  });
 
   function updateCandleCount() {
     const activeCandles = candles.filter(
@@ -92,12 +118,6 @@ document.addEventListener("DOMContentLoaded", function () {
         balloon.style.color = colors[i % colors.length];
         balloon.style.animationDelay = Math.random() * 2 + "s";
         blackScreen.appendChild(balloon);
-        
-        setTimeout(() => {
-          if (balloon.parentNode) {
-            balloon.parentNode.removeChild(balloon);
-          }
-        }, 5000);
       }, i * 400);
     }
   }
@@ -114,45 +134,115 @@ document.addEventListener("DOMContentLoaded", function () {
         confetti.style.animationDelay = Math.random() * 3 + "s";
         confetti.style.animationDuration = (Math.random() * 2 + 4) + "s";
         blackScreen.appendChild(confetti);
-        
-        setTimeout(() => {
-          if (confetti.parentNode) {
-            confetti.parentNode.removeChild(confetti);
-          }
-        }, 6000);
       }, i * 200);
     }
   }
 
+  function createFloatingPhotos() {
+    // Show all 8 photos gradually and naturally
+    const photosToShow = Math.min(photoFiles.length, 8);
+    
+    for (let i = 0; i < photosToShow; i++) {
+      setTimeout(() => {
+        const photo = document.createElement("img");
+        photo.className = "floating-photo";
+        photo.src = photoFiles[i % photoFiles.length];
+        
+        // Position photos more naturally across the screen
+        const leftPosition = 10 + (i % 3) * 30 + Math.random() * 20;
+        photo.style.left = leftPosition + "%";
+        
+        // Add slight delay for natural appearance
+        photo.style.animationDelay = (Math.random() * 1 + 0.5) + "s";
+        
+        // Handle successful image load
+        photo.onload = function() {
+          console.log("Photo loaded successfully:", this.src);
+          this.style.opacity = "1";
+        };
+        
+        // Handle image load errors gracefully
+        photo.onerror = function() {
+          console.log("Photo failed to load:", this.src);
+          if (this.parentNode) {
+            this.parentNode.removeChild(this);
+          }
+        };
+        
+        blackScreen.appendChild(photo);
+      }, i * 1000); // Stagger photos every 1 second for smoother appearance
+    }
+  }
+
+  function playBirthdayMusic() {
+    birthdayMusic.currentTime = 0; // Reset to beginning
+    birthdayMusic.play().catch(error => {
+      console.log("Could not play birthday music:", error);
+    });
+  }
+
+  function stopBirthdayMusic() {
+    birthdayMusic.pause();
+    birthdayMusic.currentTime = 0;
+  }
+
+  function showReturnButton() {
+    setTimeout(() => {
+      returnButton.classList.add("show");
+      console.log("🔄 Return button shown");
+    }, 5000); // Show return button after 5 seconds
+  }
+
   function triggerCelebration() {
     celebrationActive = true;
+    console.log("🎉 Celebration triggered! Starting in 0.8 seconds...");
     
-    // Show black screen
-    blackScreen.classList.add("active");
-    
-    // Start the celebration text animation
+    // Wait 0.8 seconds before showing the black screen
     setTimeout(() => {
-      celebrationText.style.animationPlayState = "running";
-    }, 500);
-    
-    // Create balloons and confetti
-    setTimeout(() => {
-      createBalloons();
-      createConfetti();
-    }, 1000);
-    
-    // Hide celebration after 8 seconds
-    setTimeout(() => {
-      hideCelebration();
-    }, 8000);
+      console.log("🖤 Black screen activated");
+      // Show black screen
+      blackScreen.classList.add("active");
+      
+      // Play birthday music
+      playBirthdayMusic();
+      console.log("🎵 Music started");
+      
+      // Start the celebration text animation
+      setTimeout(() => {
+        console.log("📝 Text animation started");
+        celebrationText.style.animationPlayState = "running";
+      }, 500);
+      
+      // Create balloons, confetti, and photos
+      setTimeout(() => {
+        console.log("🎈 Creating balloons...");
+        createBalloons();
+        console.log("🎊 Creating confetti...");
+        createConfetti();
+        console.log("📸 Creating floating photos...");
+        createFloatingPhotos();
+      }, 1000);
+      
+      // Show return button after some time
+      showReturnButton();
+      
+      // NO AUTO-HIDE - celebration runs indefinitely until return button is clicked
+    }, 800);
   }
 
   function hideCelebration() {
+    console.log("🔄 Hiding celebration...");
     celebrationActive = false;
     blackScreen.classList.remove("active");
+    returnButton.classList.remove("show");
+    
+    // Stop birthday music
+    stopBirthdayMusic();
+    console.log("🔇 Music stopped");
     
     // Clear all celebration elements
-    const celebrationElements = blackScreen.querySelectorAll(".balloon, .confetti");
+    const celebrationElements = blackScreen.querySelectorAll(".balloon, .confetti, .floating-photo");
+    console.log("🧹 Cleaning up", celebrationElements.length, "celebration elements");
     celebrationElements.forEach(element => {
       if (element.parentNode) {
         element.parentNode.removeChild(element);
@@ -165,6 +255,8 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       celebrationText.style.animation = "floatUp 4s ease-out forwards";
     }, 10);
+    
+    console.log("✅ Celebration cleanup complete");
   }
 
   if (navigator.mediaDevices.getUserMedia) {

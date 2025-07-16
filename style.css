@@ -276,3 +276,70 @@ body {
     transform: rotateZ(360deg);
   }
 }
+
+.floating-photo {
+  position: absolute;
+  width: 150px;
+  height: 200px;
+  border: 8px solid #FFF;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.4);
+  animation: photoFloatSmooth 8s ease-out forwards;
+  opacity: 0;
+  object-fit: cover;
+  transform: rotate(-5deg);
+}
+
+@keyframes photoFloatSmooth {
+  0% {
+    bottom: -250px;
+    opacity: 0;
+    transform: rotate(-5deg) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: rotate(-2deg) scale(0.9);
+  }
+  50% {
+    transform: rotate(1deg) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: rotate(-1deg) scale(1);
+  }
+  100% {
+    bottom: calc(100% + 50px);
+    opacity: 0;
+    transform: rotate(2deg) scale(0.9);
+  }
+}
+
+.return-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+  z-index: 1002;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.return-button.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.return-button:hover {
+  background: linear-gradient(45deg, #FF1493, #FF69B4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+}
