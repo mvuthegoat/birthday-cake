@@ -47,6 +47,31 @@ document.addEventListener("DOMContentLoaded", function () {
     "frame-modern"
   ];
 
+  // Create a shuffled copy of photos for better randomization
+  let shuffledPhotos = [...photoFiles];
+  let currentPhotoIndex = 0;
+  
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+  
+  function getRandomPhoto() {
+    // If we've gone through all photos, reshuffle
+    if (currentPhotoIndex >= shuffledPhotos.length) {
+      shuffledPhotos = shuffleArray([...photoFiles]);
+      currentPhotoIndex = 0;
+      console.log("📸 Photos reshuffled for better randomization");
+    }
+    
+    const selectedPhoto = shuffledPhotos[currentPhotoIndex];
+    currentPhotoIndex++;
+    return selectedPhoto;
+  }
+
   // Return button functionality
   returnButton.addEventListener("click", function() {
     console.log("🔄 Return button clicked");
@@ -128,6 +153,26 @@ document.addEventListener("DOMContentLoaded", function () {
     balloon.className = "balloon";
     balloon.textContent = "🎈";
     balloon.style.left = Math.random() * 90 + 5 + "%";
+    
+    // Add random size variation
+    const sizes = ["small", "", "big", "super-big"]; // "" is default size
+    const sizeWeights = [0.3, 0.4, 0.2, 0.1]; // 30% small, 40% normal, 20% big, 10% super-big
+    let randomSize = Math.random();
+    let selectedSize = "";
+    
+    if (randomSize < 0.3) {
+      selectedSize = "small";
+    } else if (randomSize < 0.7) {
+      selectedSize = ""; // normal size
+    } else if (randomSize < 0.9) {
+      selectedSize = "big";
+    } else {
+      selectedSize = "super-big";
+    }
+    
+    if (selectedSize) {
+      balloon.classList.add(selectedSize);
+    }
     
     const colors = ["#FF69B4", "#FFD700", "#00CED1", "#9370DB", "#FF1493"];
     balloon.style.color = colors[Math.floor(Math.random() * colors.length)];
@@ -218,9 +263,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const randomFrameStyle = frameStyles[Math.floor(Math.random() * frameStyles.length)];
     photo.classList.add(randomFrameStyle);
     
-    // Cycle through photos
-    const photoIndex = Math.floor(Math.random() * photoFiles.length);
-    photo.src = photoFiles[photoIndex];
+    // Use shuffled random photo selection for better variety
+    photo.src = getRandomPhoto();
     
     // Position photos naturally across the screen
     const leftPosition = 5 + Math.random() * 80;

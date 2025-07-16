@@ -343,6 +343,18 @@ body {
   opacity: 0;
 }
 
+.balloon.small {
+  font-size: 1.5rem;
+}
+
+.balloon.big {
+  font-size: 3rem;
+}
+
+.balloon.super-big {
+  font-size: 4rem;
+}
+
 @keyframes balloonFloatContinuous {
   0% {
     bottom: -50px;
