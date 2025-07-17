@@ -1,0 +1,13 @@
+{
+  "name": "birthday-cake-app",
+  "version": "1.0.0",
+  "description": "Birthday cake candle blowing app for Nhím",
+  "scripts": {
+    "build": "node generate-photo-list.js",
+    "dev": "npm run build && python -m http.server 8000",
+    "deploy": "npm run build && echo 'Ready for deployment! Upload all files to your server.'"
+  },
+  "keywords": ["birthday", "cake", "celebration"],
+  "author": "mvu",
+  "license": "MIT"
+} 

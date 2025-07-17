@@ -1,2 +1,20 @@
-.gitattributes
+# Dependencies
+node_modules/
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Keep these files for deployment:
+# photos.json - generated file, should be committed
+# public/ - all photos, should be committed
+# *.html, *.css, *.js, *.mp3 - app files, should be committed

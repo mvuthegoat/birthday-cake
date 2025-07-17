@@ -25,19 +25,41 @@ document.addEventListener("DOMContentLoaded", function () {
   birthdayMusic.loop = false;
   birthdayMusic.volume = 0.7;
   
-  // Photo filenames - add your photos to the same directory
-  const photoFiles = [
-    "photo1.jpg",
-    "photo2.jpg", 
-    "photo3.jpg",
-    "photo4.jpg",
-    "photo5.jpg",
-    "photo6.jpg",
-    "photo7.jpg",
-    "photo8.jpg",
-    "photo9.jpg",
-    "photo10.jpg"
-  ];
+  // Photo configuration - automatically loads from photos.json
+  let photoFiles = []; // Will be populated from photos.json
+  
+  // Load photos automatically from generated JSON file
+  async function loadPhotos() {
+    try {
+      console.log('🔄 Loading photos from photos.json...');
+      const response = await fetch('photos.json');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const photoData = await response.json();
+      console.log('📄 Raw photo data:', photoData);
+      
+      // Build full paths for all photos
+      photoFiles = photoData.photos.map(filename => photoData.folder + filename);
+      
+      console.log(`📸 Loaded ${photoFiles.length} photos automatically!`);
+      console.log('🗂️ Photo paths:', photoFiles);
+      
+      // Initialize photo shuffling after loading
+      initializePhotoSystem();
+      
+    } catch (error) {
+      console.error('❌ Could not load photos.json');
+      console.error('Error details:', error);
+      console.error('💡 Make sure you are running a local server (not file:// protocol)');
+      console.error('📁 Run: python -m http.server 8000 or npm run dev');
+      
+      // Fallback to empty array
+      photoFiles = [];
+    }
+  }
   
   // Frame styles for diverse photo frames
   const frameStyles = [
@@ -50,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   // Create a shuffled copy of photos for better randomization
-  let shuffledPhotos = [...photoFiles];
+  let shuffledPhotos = [];
   let currentPhotoIndex = 0;
   
   function shuffleArray(array) {
@@ -61,7 +83,20 @@ document.addEventListener("DOMContentLoaded", function () {
     return array;
   }
   
+  function initializePhotoSystem() {
+    // Initialize shuffled photos after loading
+    shuffledPhotos = shuffleArray([...photoFiles]);
+    currentPhotoIndex = 0;
+    console.log('🎲 Photo system initialized with', photoFiles.length, 'photos');
+  }
+  
   function getRandomPhoto() {
+    // If no photos loaded, return empty
+    if (photoFiles.length === 0) {
+      console.warn('⚠️ No photos available. Run "node generate-photo-list.js"');
+      return '';
+    }
+    
     // If we've gone through all photos, reshuffle
     if (currentPhotoIndex >= shuffledPhotos.length) {
       shuffledPhotos = shuffleArray([...photoFiles]);
@@ -335,7 +370,10 @@ document.addEventListener("DOMContentLoaded", function () {
     photo.classList.add(randomFrameStyle);
     
     // Use shuffled random photo selection for better variety
-    photo.src = getRandomPhoto();
+    const photoSrc = getRandomPhoto();
+    photo.src = photoSrc;
+    
+    console.log('🖼️ Creating photo:', photoSrc, 'with frame:', randomFrameStyle);
     
     // Position photos naturally across the screen
     const leftPosition = 5 + Math.random() * 80;
@@ -346,12 +384,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Handle successful image load
     photo.onload = function() {
-      console.log("Photo loaded successfully:", this.src, "with frame:", randomFrameStyle);
+      console.log("✅ Photo loaded successfully:", this.src, "with frame:", randomFrameStyle);
     };
     
     // Handle image load errors gracefully
     photo.onerror = function() {
-      console.log("Photo failed to load:", this.src);
+      console.error("❌ Photo failed to load:", this.src);
+      console.error("🔍 Check if file exists at:", this.src);
       if (this.parentNode) {
         this.parentNode.removeChild(this);
       }
@@ -365,6 +404,23 @@ document.addEventListener("DOMContentLoaded", function () {
         photo.parentNode.removeChild(photo);
       }
     }, 8000);
+  }
+
+  // Test function to debug photo loading
+  function testPhotoLoading() {
+    console.log('🧪 Testing photo loading...');
+    console.log('📊 Photo files available:', photoFiles.length);
+    console.log('📁 Photo files:', photoFiles);
+    
+    if (photoFiles.length > 0) {
+      console.log('🎯 Testing first photo:', photoFiles[0]);
+      const testImg = new Image();
+      testImg.onload = () => console.log('✅ Test photo loaded successfully!');
+      testImg.onerror = () => console.error('❌ Test photo failed to load!');
+      testImg.src = photoFiles[0];
+    } else {
+      console.error('❌ No photos available for testing');
+    }
   }
 
   function startContinuousPhotos() {
@@ -528,4 +584,10 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     console.log("getUserMedia not supported on your browser!");
   }
+
+  // Load photos when page loads
+  loadPhotos();
+  
+  // Add test function to window for manual testing
+  window.testPhotoLoading = testPhotoLoading;
 });
